@@ -22,8 +22,8 @@ var Menubar = function ( editor ) {
 	var terrainFileInput = document.createElement( 'input' );
 	terrainFileInput.type = 'file';
 	terrainFileInput.addEventListener( 'change', function ( event ) {
-		var x = prompt('x');
-		var z = prompt('z');
+		var x = prompt('Terrain Cell Grid X: ');
+		var z = prompt('Terrain Cell Grid Z: ');
 		var result = editor.loader.loadFile( terrainFileInput.files[ 0 ], true, function(obj) {
 			obj.userData = obj.userData || {};
 			obj.userData.gameType = 'Terrain';
