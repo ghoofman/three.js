@@ -9,7 +9,7 @@ var Loader = function ( editor ) {
 
 	this.texturePath = '';
 
-	this.loadFile = function ( file ) {
+	this.loadFile = function ( file, unwrapObject, process ) {
 
 		var filename = file.name;
 		var extension = filename.split( '.' ).pop().toLowerCase();
@@ -251,8 +251,19 @@ var Loader = function ( editor ) {
 					var object = new THREE.OBJLoader().parse( contents );
 					object.name = filename;
 
-					editor.addObject( object );
-					editor.select( object );
+					if(unwrapObject) {
+						var obj =  object.children[0];
+						obj.name = filename;
+						editor.addObject( obj );
+						process && process(obj);
+						editor.select( obj );
+					} else {
+						object.name = filename;
+						editor.addObject( object );
+						process && process(object);
+						editor.select( object );
+					}
+
 
 				}, false );
 				reader.readAsText( file );

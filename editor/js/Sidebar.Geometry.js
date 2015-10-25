@@ -124,6 +124,22 @@ Sidebar.Geometry = function ( editor ) {
 
 	container.add( geometryNameRow );
 
+
+
+	// game type
+
+	var geometryGameTypeRow = new UI.Panel();
+	var geometryGameType = new UI.Input().setWidth( '150px' ).setFontSize( '12px' ).onChange( function () {
+
+		editor.setGeometryGameType( editor.selected.geometry, geometryGameType.getValue() );
+
+	} );
+
+	geometryGameTypeRow.add( new UI.Text( 'GameType' ).setWidth( '90px' ) );
+	geometryGameTypeRow.add( geometryGameType );
+
+	container.add( geometryGameTypeRow );
+
 	// geometry
 
 	container.add( new Sidebar.Geometry.Geometry( signals ) );

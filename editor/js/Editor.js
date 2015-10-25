@@ -178,6 +178,13 @@ Editor.prototype = {
 
 	},
 
+	gameTypeObject: function ( object, gameType ) {
+
+		object.gameType = gameType;
+		this.signals.sceneGraphChanged.dispatch();
+
+	},
+
 	removeObject: function ( object ) {
 
 		if ( object.parent === null ) return; // avoid deleting the camera or scene
@@ -206,6 +213,13 @@ Editor.prototype = {
 	setGeometryName: function ( geometry, name ) {
 
 		geometry.name = name;
+		this.signals.sceneGraphChanged.dispatch();
+
+	},
+
+	setGeometryGameType: function ( geometry, gameType ) {
+
+		geometry.gameType = gameType;
 		this.signals.sceneGraphChanged.dispatch();
 
 	},

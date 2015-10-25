@@ -77,6 +77,17 @@ input.Number {
 	top: 0px;
 }
 
+	#menubar > .option {
+		float: left;
+	    cursor: pointer;
+	    padding-right: 8px;
+	    display: inline-block;
+	    color: #888;
+		margin: 4px;
+	    padding: 4px;
+	    background-color: #00a;
+	}
+
 	#menubar .menu {
 		float: left;
 		cursor: pointer;

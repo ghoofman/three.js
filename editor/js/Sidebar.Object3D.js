@@ -95,6 +95,57 @@ Sidebar.Object3D = function ( editor ) {
 
 	container.add( objectNameRow );
 
+
+	// game type
+
+	var objectGameTypeRow = new UI.Panel();
+
+	objectGameTypeRow.add( new UI.Text( 'GameType' ).setWidth( '90px' ) );
+
+	var objectGameTypes = new UI.Select().setPosition('absolute').setRight( '8px' ).setFontSize( '11px' );
+	objectGameTypes.setOptions( {
+
+		'Terrain': 'Terrain',
+		'Static': 'Static',
+		'Static Triangle': 'Static Triangle',
+		'Dynamic': 'Dynamic',
+		'Bounding Box': 'Bounding Box'
+
+	} );
+	objectGameTypes.onClick( function ( event ) {
+
+		event.stopPropagation(); // Avoid panel collapsing
+
+	} );
+	//objectGameTypes.setValue(editor.gameTypeObject( editor.selected, 'Dynamic' ));
+	objectGameTypes.onChange( function ( event ) {
+
+		var object = editor.selected;
+
+		object.gameType = this.getValue();
+
+		object.userData = object.userData || {};
+		object.userData.gameType = this.getValue();
+
+		console.log('Set Type: ', object.gameType);
+
+		signals.objectChanged.dispatch( object );
+
+	} );
+	objectGameTypeRow.add( objectGameTypes );
+
+
+	// var objectGameType = new UI.Input().setWidth( '150px' ).setFontSize( '12px' ).onChange( function () {
+	//
+	// 	editor.gameTypeObject( editor.selected, objectGameType.getValue() );
+	//
+	// } );
+	//
+	// objectGameTypeRow.add( new UI.Text( 'GameType' ).setWidth( '90px' ) );
+	// objectGameTypeRow.add( objectGameType );
+
+	container.add( objectGameTypeRow );
+
 	/*
 	// parent
 
@@ -585,6 +636,11 @@ Sidebar.Object3D = function ( editor ) {
 
 		objectUUID.setValue( object.uuid );
 		objectName.setValue( object.name );
+		if(object.userData) {
+			objectGameTypes.setValue( object.userData.gameType || 'Static' );
+		} else {
+			objectGameTypes.setValue( 'Static' );
+		}
 
 		/*
 		if ( object.parent !== null ) {

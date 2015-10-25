@@ -42,7 +42,7 @@ Menubar.File = function ( editor ) {
 	fileInput.type = 'file';
 	fileInput.addEventListener( 'change', function ( event ) {
 
-		editor.loader.loadFile( fileInput.files[ 0 ] );
+		editor.loader.loadFile( fileInput.files[ 0 ], true );
 
 	} );
 
@@ -146,6 +146,94 @@ Menubar.File = function ( editor ) {
 		}
 
 		exportString( output, 'scene.json' );
+
+	} );
+	options.add( option );
+
+	// Export Wayward Scene
+
+	var option = new UI.Panel();
+	option.setClass( 'option' );
+	option.setTextContent( 'Export Wayward Scene' );
+	option.onClick( function () {
+
+		var output = editor.scene.toJSON();
+
+		var output = {
+		 	models: [],
+			terrain: {
+				size: [ 0, 0 ],
+				chunks: []
+			}
+		};
+
+		for(var i = 0; i < editor.scene.children.length; i++) {
+			var m = editor.scene.children[i];
+			if(m.type == "Mesh" && (m.userData.gameType || 'Static') == 'Static') {
+				var obj = {
+					name: m.name,
+					type: m.userData.gameType || 'Static',
+					position: [ m.position.x, m.position.y, m.position.z ],
+					scale: [ m.scale.x, m.scale.y, m.scale.z ],
+					rotation: [ m.rotation.x, m.rotation.y, m.rotation.z ],
+					meta: m.userData,
+					collisions: []
+				};
+
+				for(var j = 0; j < m.children.length; j++) {
+					var child = m.children[j];
+					if(child.userData.gameType == 'Bounding Box') {
+						obj.collisions.push({
+							position: [ child.position.x, child.position.y, child.position.z ],
+							scale: [ child.scale.x, child.scale.y, child.scale.z ],
+							rotation: [ child.rotation.x, child.rotation.y, child.rotation.z ],
+							meta: child.userData
+						});
+					}
+				}
+
+				output.models.push(obj);
+			} else if(m.type == "Mesh" && m.userData.gameType == 'Static Triangle') {
+				var obj = {
+					name: m.name,
+					type: 'Static Triangle',
+					position: [ m.position.x, m.position.y, m.position.z ],
+					scale: [ m.scale.x, m.scale.y, m.scale.z ],
+					rotation: [ m.rotation.x, m.rotation.y, m.rotation.z ],
+					meta: m.userData,
+					collisions: []
+				};
+
+				output.models.push(obj);
+			} else if(m.type == "Mesh" && m.userData.gameType == 'Terrain') {
+				var size = [ parseInt(m.userData.TerrainX), parseInt(m.userData.TerrainZ)]
+				if(size[0] + 1 > output.terrain.size[0]) {
+					output.terrain.size[0] = size[0] + 1;
+				}
+				if(size[1] + 1 > output.terrain.size[1]) {
+					output.terrain.size[1] = size[1] + 1;
+				}
+				output.terrain.chunks.push({
+					name: m.name,
+					type: m.userData.gameType,
+					position: [ m.position.x, m.position.y, m.position.z ],
+					scale: [ m.scale.x, m.scale.y, m.scale.z ],
+					rotation: [ m.rotation.x, m.rotation.y, m.rotation.z ],
+					meta: m.userData
+				});
+			}
+		}
+
+		try {
+			output = JSON.stringify( output, null, '\t' );
+			output = output.replace( /[\n\t]+([\d\.e\-\[\]]+)/g, '$1' );
+		} catch ( e ) {
+			output = JSON.stringify( output );
+		}
+
+		output = 'module.exports = ' + output;
+
+		exportString( output, 'scene.js' );
 
 	} );
 	options.add( option );
